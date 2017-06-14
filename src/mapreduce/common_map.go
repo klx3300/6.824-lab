@@ -1,7 +1,11 @@
 package mapreduce
 
 import (
+	"encoding/json"
+	"fmt"
 	"hash/fnv"
+	"io/ioutil"
+	"os"
 )
 
 // doMap does the job of a map worker: it reads one of the input files
@@ -40,6 +44,38 @@ func doMap(
 	//     err := enc.Encode(&kv)
 	//
 	// Remember to close the file after you have written all the values!
+	iFile, iErr := os.Open(inFile)
+	if iErr != nil {
+		// hell knows who can handle this error
+		// lets print something
+		fmt.Printf("Error occurred at i/o-readInput: %s\n", iErr.Error())
+		//panic(iErr.Error())
+	}
+	defer iFile.Close()
+	iContent, iRErr := ioutil.ReadAll(iFile)
+	if iRErr != nil {
+		// wtf is that?
+		fmt.Printf("Error occurred at i/o-readInputContent: %s\n", iRErr.Error())
+	}
+	retkv := mapF(inFile, string(iContent))
+	// open files happily
+	intFiles := make([]*os.File, nReduce)
+	intFileEncoders := make([]*json.Encoder, nReduce)
+
+	for itFile := 0; itFile < nReduce; itFile++ {
+		intFiles[itFile], _ = os.OpenFile(reduceName(jobName, mapTaskNumber, itFile), os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
+		defer intFiles[itFile].Close()
+		// ignore errors
+		intFileEncoders[itFile] = json.NewEncoder(intFiles[itFile])
+	}
+	for _, kvpair := range retkv {
+		correctR := ihash(kvpair.Key)
+		err := intFileEncoders[correctR].Encode(&kvpair)
+		if err != nil {
+			// ???
+			fmt.Printf("Error occurred at conv-toJSON: %s\n", err.Error())
+		}
+	}
 }
 
 func ihash(s string) uint32 {
