@@ -1,0 +1,44 @@
+
+==> Part I
+ok  	mapreduce	2.560s
+
+==> Part II
+
+==> Part III
+2017/06/15 12:24:13 method CleanupFiles has wrong number of ins: 1
+2017/06/15 12:24:13 method Lock has wrong number of ins: 1
+2017/06/15 12:24:13 method Unlock has wrong number of ins: 1
+2017/06/15 12:24:13 method Wait has wrong number of ins: 1
+2017/06/15 12:24:13 method Lock has wrong number of ins: 1
+/var/tmp/824-1000/mr19934-master: Starting Map/Reduce task test
+2017/06/15 12:24:13 method Unlock has wrong number of ins: 1
+Schedule: 100 Map tasks (50 I/Os)
+Schedule: Map phase done
+Schedule: 50 Reduce tasks (100 I/Os)
+Schedule: Reduce phase done
+2017/06/15 12:24:13 method Lock has wrong number of ins: 1
+2017/06/15 12:24:13 method Unlock has wrong number of ins: 1
+Register: RPC /var/tmp/824-1000/mr19934-master register error
+Merge: read mrtmp.test-res-0
+2017/06/15 12:24:13 Merge: open mrtmp.test-res-0: no such file or directory
+FAIL	mapreduce	0.021s
+
+==> Part IV
+2017/06/15 12:24:13 method CleanupFiles has wrong number of ins: 1
+2017/06/15 12:24:13 method Lock has wrong number of ins: 1
+2017/06/15 12:24:13 method Unlock has wrong number of ins: 1
+2017/06/15 12:24:13 method Wait has wrong number of ins: 1
+2017/06/15 12:24:13 method Lock has wrong number of ins: 1
+/var/tmp/824-1000/mr19982-master: Starting Map/Reduce task test
+2017/06/15 12:24:13 method Lock has wrong number of ins: 1
+2017/06/15 12:24:13 method Unlock has wrong number of ins: 1
+Schedule: 100 Map tasks (50 I/Os)
+Schedule: Map phase done
+Schedule: 50 Reduce tasks (100 I/Os)
+Schedule: Reduce phase done
+2017/06/15 12:24:13 method Unlock has wrong number of ins: 1
+Merge: read mrtmp.test-res-0
+2017/06/15 12:24:13 Merge: open mrtmp.test-res-0: no such file or directory
+FAIL	mapreduce	0.025s
+
+==> Part V (challenge)

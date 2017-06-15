@@ -63,13 +63,13 @@ func doMap(
 	intFileEncoders := make([]*json.Encoder, nReduce)
 
 	for itFile := 0; itFile < nReduce; itFile++ {
-		intFiles[itFile], _ = os.OpenFile(reduceName(jobName, mapTaskNumber, itFile), os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
+		intFiles[itFile], _ = os.OpenFile(reduceName(jobName, mapTaskNumber, itFile), os.O_WRONLY|os.O_CREATE, 0666)
 		defer intFiles[itFile].Close()
 		// ignore errors
 		intFileEncoders[itFile] = json.NewEncoder(intFiles[itFile])
 	}
 	for _, kvpair := range retkv {
-		correctR := ihash(kvpair.Key)
+		correctR := ihash(kvpair.Key) % uint32(nReduce)
 		err := intFileEncoders[correctR].Encode(&kvpair)
 		if err != nil {
 			// ???
