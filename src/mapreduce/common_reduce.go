@@ -59,8 +59,7 @@ func doReduce(
 	defer mFile.Close()
 
 	mEncoder := json.NewEncoder(mFile)
-	specKeyList := list.New()
-	var lastKey string = ""
+	mapKeys := make(map[string]*list.List)
 	for fIt := 0; fIt < nMap; fIt++ {
 		for {
 			var tmpkv KeyValue
@@ -69,49 +68,43 @@ func doReduce(
 				// that must be eof caused that. let's quit the loop
 				break
 			}
-			fmt.Println("Reduce func readed", tmpkv)
-			if lastKey == "" {
-				lastKey = tmpkv.Key
-				specKeyList.PushBack(tmpkv)
-			} else if lastKey == tmpkv.Key {
-				specKeyList.PushBack(tmpkv)
+			// is previously existed in the map?
+			tmpV, tmpExist := mapKeys[tmpkv.Key]
+			if tmpExist {
+				tmpV.PushBack(tmpkv.Value)
 			} else {
-				// lastkey != tmpkv.key
-
-				// first, take care of the already generated list of previous key
-				// convert the list into array
-				tmparr := make([]string, specKeyList.Len())
-
-				for listIt, listItCnt := specKeyList.Front(), 0; listIt != nil; listIt, listItCnt = listIt.Next(), listItCnt+1 {
-					tmpConvVal, tmpConvIsCorrect := listIt.Value.(KeyValue)
-					if tmpConvIsCorrect {
-						tmparr[listItCnt] = tmpConvVal.Value
-					}
-				}
-				// send this array to reduce func
-				rRet := reduceF(lastKey, tmparr)
-				tmpToEnc := KeyValue{lastKey, rRet}
-				fmt.Println("Reduce func encoded", tmpToEnc)
-				mEncoder.Encode(tmpToEnc)
-				// record the next key
-				lastKey = tmpkv.Key
-				specKeyList = list.New()
-				specKeyList.PushBack(tmpkv)
+				mapKeys[tmpkv.Key] = list.New()
+				mapKeys[tmpkv.Key].PushBack(tmpkv.Value)
 			}
 		}
-		// something must be done at last
-		tmparr := make([]string, specKeyList.Len())
+		// // something must be done at last
+		// tmparr := make([]string, specKeyList.Len())
 
-		for listIt, listItCnt := specKeyList.Front(), 0; listIt != nil; listIt, listItCnt = listIt.Next(), listItCnt+1 {
-			tmpConvVal, tmpConvIsCorrect := listIt.Value.(KeyValue)
-			if tmpConvIsCorrect {
-				tmparr[listItCnt] = tmpConvVal.Value
+		// for listIt, listItCnt := specKeyList.Front(), 0; listIt != nil; listIt, listItCnt = listIt.Next(), listItCnt+1 {
+		// 	tmpConvVal, tmpConvIsCorrect := listIt.Value.(KeyValue)
+		// 	if tmpConvIsCorrect {
+		// 		tmparr[listItCnt] = tmpConvVal.Value
+		// 	}
+		// }
+		// // send this array to reduce func
+		// rRet := reduceF(lastKey, tmparr)
+		// tmpToEnc := KeyValue{lastKey, rRet}
+		// fmt.Println("Reduce func encoded", tmpToEnc)
+		// mEncoder.Encode(tmpToEnc)
+	}
+	// for each elem in map, conv them to array and send to reduceF
+	for tmpK, tmpLst := range mapKeys {
+		tmpArr := make([]string, tmpLst.Len())
+		for listIt, listItCnt := tmpLst.Front(), 0; listIt != nil; listIt, listItCnt = listIt.Next(), listItCnt+1 {
+			tmpConvV, tmpConvCorr := listIt.Value.(string)
+			if tmpConvCorr {
+				tmpArr[listItCnt] = tmpConvV
+			} else {
+				fmt.Println("Unexpected error occurred at doReduce func")
 			}
 		}
-		// send this array to reduce func
-		rRet := reduceF(lastKey, tmparr)
-		tmpToEnc := KeyValue{lastKey, rRet}
-		fmt.Println("Reduce func encoded", tmpToEnc)
-		mEncoder.Encode(tmpToEnc)
+		// send to reduceF
+		tmpRet := reduceF(tmpK, tmpArr)
+		mEncoder.Encode(KeyValue{tmpK, tmpRet})
 	}
 }

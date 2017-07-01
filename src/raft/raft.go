@@ -19,11 +19,12 @@ package raft
 
 import "sync"
 import "labrpc"
+import "fmt"
+import "time"
+import "math/rand"
 
 // import "bytes"
 // import "encoding/gob"
-
-
 
 //
 // as each Raft peer becomes aware that successive log entries are
@@ -37,6 +38,14 @@ type ApplyMsg struct {
 	Snapshot    []byte // ignore for lab2; only used in lab3
 }
 
+// simple key-value pair
+type Pair struct {
+	Command interface{}
+	term    int
+}
+
+// appendEntries rpc parameter
+
 //
 // A Go object implementing a single Raft peer.
 //
@@ -49,17 +58,93 @@ type Raft struct {
 	// Your data here.
 	// Look at the paper's Figure 2 for a description of what
 	// state a Raft server must maintain.
+	currentTerm   int
+	currentLeader int
+	votedFor      int
+	logEntries    []Pair
 
+	commitIndex   int
+	lastCommitted int
+
+	// if this peer come into power,the following structure will be constructed
+	// otherwise,it will keeps nil value
+	nextIndex  *[]int
+	matchIndex *[]int
+
+	// messaging channel
+	timeoutChan  chan int
+	sigrstChan   chan int
+	toworkerChan chan int // receive messeage on receiving valid AppendEntries RPC
+
+	// running state indicator
+	RUNNING_STATE bool
+	TIMER_STATE   bool
+
+	// debugs
+	DEBUG_SWITCH bool
+}
+
+func (rf *Raft) debugPrint(outer func()) {
+	if rf.DEBUG_SWITCH {
+		outer()
+	}
+}
+
+func (rf *Raft) Timer(durationMs int) {
+	duration := durationMs
+	ticks := duration
+	for rf.RUNNING_STATE {
+		select {
+		case newdur := <-rf.sigrstChan:
+			// signal reset timer
+			if newdur >= 0 {
+				duration = newdur
+			}
+			ticks = duration
+		case <-time.After(time.Millisecond):
+			// tick event.
+			ticks--
+		}
+		if ticks <= 0 { // avoid the situation that accidentially set the dur to neg numbers
+			// timeout.
+			// on timing out, the timer will automatically pause
+			// and reset the tick event counter
+			rf.debugPrint(func() { fmt.Printf("Server %d Timed out.\n", rf.me) })
+			// in case signal reset may be sent during this process, check reset channel
+			rf.timeoutChan <- duration
+			newDuration := <-rf.sigrstChan
+			if newDuration >= 0 {
+				duration = newDuration
+			}
+			ticks = duration
+		}
+	}
+}
+
+// set the timer
+func (rf *Raft) TimerSet(durationMs int) {
+	select {
+	case <-rf.timeoutChan:
+	default:
+	}
+	select {
+	case <-rf.sigrstChan:
+	default:
+	}
+	rf.sigrstChan <- durationMs
+}
+
+// reset the timer
+func (rf *Raft) TimerReset() {
+	rand.Seed(time.Now().Unix())
+	rf.TimerSet(rand.Intn(500) + 200)
 }
 
 // return currentTerm and whether this server
 // believes it is the leader.
 func (rf *Raft) GetState() (int, bool) {
-
-	var term int
-	var isleader bool
 	// Your code here.
-	return term, isleader
+	return rf.currentTerm, rf.matchIndex != nil
 }
 
 //
@@ -90,14 +175,15 @@ func (rf *Raft) readPersist(data []byte) {
 	// d.Decode(&rf.yyy)
 }
 
-
-
-
 //
 // example RequestVote RPC arguments structure.
 //
 type RequestVoteArgs struct {
 	// Your data here.
+	Term         int
+	CandidateId  int
+	LastLogIndex int
+	LastLogTerm  int
 }
 
 //
@@ -105,6 +191,52 @@ type RequestVoteArgs struct {
 //
 type RequestVoteReply struct {
 	// Your data here.
+	Term        int
+	VoteGranted bool
+}
+
+// appendEntries rpc args
+type AppendEntriesArgs struct {
+	Term              int
+	LeaderId          int // i am leader!
+	PrevLogIndex      int
+	PrevLogTerm       int
+	Entries           []Pair
+	LeaderCommitIndex int
+}
+
+type AppendEntriesReply struct {
+	CurrTerm int
+	Success  bool
+}
+
+// appendEntries RPC handler
+func (rf *Raft) AppendEntries(args AppendEntriesArgs, reply *AppendEntriesReply) {
+	rf.TimerReset()
+	reply.CurrTerm = rf.currentTerm
+	if args.Term < rf.currentTerm {
+		reply.Success = false
+		return
+	}
+	// ok in this case (lab 2A) I wont care what args contains,
+	// I will just take it as heartbeat package
+	// TODO : implement 2B 2C
+	rf.currentLeader = args.LeaderId
+	if args.Term >= rf.currentTerm {
+		// set current term
+		rf.currentTerm = args.Term
+		// send towork signal
+		// clear first
+		select {
+		case <-rf.toworkerChan:
+		default:
+		}
+		go func() {
+			rf.toworkerChan <- args.LeaderId
+		}()
+	}
+	reply.Success = true
+
 }
 
 //
@@ -112,6 +244,27 @@ type RequestVoteReply struct {
 //
 func (rf *Raft) RequestVote(args RequestVoteArgs, reply *RequestVoteReply) {
 	// Your code here.
+	rf.TimerReset()
+	reply.Term = rf.currentTerm
+	rf.debugPrint(func() { fmt.Printf("(%d)Server %d received a vote %v.\n", rf.currentTerm, rf.me, args) })
+	// check currency and completion
+	if args.Term < rf.currentTerm {
+		reply.VoteGranted = false
+	} else if rf.lastCommitted == 0 || (args.LastLogTerm >= rf.logEntries[rf.lastCommitted].term && args.LastLogIndex >= rf.lastCommitted) {
+		// you are the big brother ... or I have already voted for somebody!
+		if rf.votedFor == -1 || rf.votedFor == args.CandidateId {
+			// you are the big brother
+			rf.votedFor = args.CandidateId
+			rf.debugPrint(func() { fmt.Printf("(%d)Server %d gives %d a vote.\n", rf.currentTerm, rf.me, args.CandidateId) })
+			reply.VoteGranted = true
+		} else {
+			// no way
+			reply.VoteGranted = false
+		}
+	} else {
+		// I am the big brother
+		reply.VoteGranted = false
+	}
 }
 
 //
@@ -136,6 +289,11 @@ func (rf *Raft) sendRequestVote(server int, args RequestVoteArgs, reply *Request
 	return ok
 }
 
+// send an AppendEntries RPC to a server
+func (rf *Raft) sendAppendEntries(server int, args AppendEntriesArgs, reply *AppendEntriesReply) bool {
+	ok := rf.peers[server].Call("Raft.AppendEntries", args, reply)
+	return ok
+}
 
 //
 // the service using Raft (e.g. a k/v server) wants to start
@@ -153,10 +311,8 @@ func (rf *Raft) sendRequestVote(server int, args RequestVoteArgs, reply *Request
 func (rf *Raft) Start(command interface{}) (int, int, bool) {
 	index := -1
 	term := -1
-	isLeader := true
 
-
-	return index, term, isLeader
+	return index, term, rf.nextIndex != nil
 }
 
 //
@@ -167,6 +323,104 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 //
 func (rf *Raft) Kill() {
 	// Your code here, if desired.
+	rf.debugPrint(func() { fmt.Printf("Server %d Closed.\n", rf.me) })
+	rf.DEBUG_SWITCH = false // this server is dead. not needed.
+	rf.RUNNING_STATE = false
+}
+
+// this process keeps running until it was killed.
+func (rf *Raft) StateMachine() {
+	for rf.RUNNING_STATE {
+		// begin as worker:
+		// wait until timer timeout
+	FollowerProcess:
+		rf.debugPrint(func() { fmt.Printf("(%d)Server %d become follower.\n", rf.currentTerm, rf.me) })
+		rf.TimerReset()
+		rf.nextIndex = nil
+		rf.matchIndex = nil
+		rf.votedFor = -1
+		select {
+		case <-rf.timeoutChan:
+		}
+		// then I am a candidate!
+		//ElectionProcess:
+		rf.debugPrint(func() { fmt.Printf("(%d)Server %d become candidate.\n", rf.currentTerm, rf.me) })
+		rf.currentTerm++
+		rf.votedFor = rf.me
+		gatheredVotes := 1
+		rf.TimerReset()
+		for i := 0; i < len(rf.peers); i++ {
+			if i != rf.me {
+				// no one will asks himself
+				go func(i int, gatheredVotes *int) {
+					invokeTerm := rf.currentTerm
+					reply := new(RequestVoteReply)
+					args := RequestVoteArgs{rf.currentTerm, rf.me, rf.lastCommitted, 0}
+					if rf.lastCommitted != 0 {
+						args.LastLogTerm = rf.logEntries[rf.lastCommitted].term
+					}
+					rf.debugPrint(func() { fmt.Printf("(%d)Server %d asks %d for a vote %v\n", rf.currentTerm, rf.me, i, args) })
+					ok := rf.sendRequestVote(i, args, reply)
+					if ok && reply.VoteGranted && reply.Term == invokeTerm {
+						rf.mu.Lock()
+						*gatheredVotes++
+						rf.mu.Unlock()
+						rf.debugPrint(func() { fmt.Printf("(%d)Server %d gets %d votes.\n", rf.currentTerm, rf.me, *gatheredVotes) })
+					} else {
+						rf.debugPrint(func() { fmt.Printf("(%d)Vote Gathering %d<-%d Failed: %v %v\n", rf.currentTerm, rf.me, i, ok, reply) })
+					}
+				}(i, &gatheredVotes)
+			}
+		}
+		// all RequestVote RPCs are sent
+		// patiently waiting for them to return ... or not
+		for {
+			select {
+			case <-rf.timeoutChan:
+				// next term
+				goto FollowerProcess
+			case <-rf.toworkerChan:
+				// there's a leader that comes to power
+				// go back to followers
+				goto FollowerProcess
+			default:
+			}
+			if !rf.RUNNING_STATE {
+				return
+			}
+			if gatheredVotes > len(rf.peers)/2 {
+				break
+			}
+		}
+		// I come to power!
+		// note in this part (lab2A) i will not care what the leader have sent
+		// the leader will just sent empty stuffs(hb pack)
+		// TODO : lab2B lab2C
+
+		rf.debugPrint(func() { fmt.Printf("(%d)Server %d become leader.\n", rf.currentTerm, rf.me) })
+		rf.nextIndex = &[]int{}
+		rf.matchIndex = &[]int{}
+		for i := 0; i < len(rf.peers); i++ {
+			// launch goroutines to send rpc calls
+			if i != rf.me {
+				go func(i int) {
+					for rf.nextIndex != nil && rf.RUNNING_STATE {
+						// well i wont mind about what the leaders will do about it at this part (lab2A)
+						// but shall implement on later parts
+						// TODO : lab2B lab2C
+						reply := new(AppendEntriesReply)
+						args := AppendEntriesArgs{rf.currentTerm, rf.me, 0, rf.currentTerm, make([]Pair, 0), 0}
+						// send hbs
+						rf.sendAppendEntries(i, args, reply)
+						// well this part will not care about what that stuff returns.
+					}
+				}(i)
+			}
+		}
+		select {
+		case <-rf.toworkerChan:
+		}
+	}
 }
 
 //
@@ -182,6 +436,7 @@ func (rf *Raft) Kill() {
 //
 func Make(peers []*labrpc.ClientEnd, me int,
 	persister *Persister, applyCh chan ApplyMsg) *Raft {
+	rand.Seed(time.Now().Unix())
 	rf := &Raft{}
 	rf.peers = peers
 	rf.persister = persister
@@ -189,9 +444,26 @@ func Make(peers []*labrpc.ClientEnd, me int,
 
 	// Your initialization code here.
 
+	rf.DEBUG_SWITCH = false // open debug output by default
+	rf.RUNNING_STATE = true // ensure the stm loop keeps going
+	rf.TIMER_STATE = true   // ensure continuous timer
+
+	// setting up channels
+
+	rf.timeoutChan = make(chan int)
+	rf.sigrstChan = make(chan int)
+
+	// first, recover currTerm,votedFor: these values are independent with the persisted values,
+	rf.currentTerm = 0
+	rf.votedFor = -1
+	rf.currentLeader = -1
+
 	// initialize from state persisted before a crash
 	rf.readPersist(persister.ReadRaftState())
 
+	// finally, run the state machine and the timer
+	go rf.Timer(rand.Intn(500) + 200)
+	go rf.StateMachine()
 
 	return rf
 }
