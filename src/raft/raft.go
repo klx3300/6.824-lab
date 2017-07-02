@@ -245,10 +245,11 @@ func (rf *Raft) AppendEntries(args AppendEntriesArgs, reply *AppendEntriesReply)
 func (rf *Raft) RequestVote(args RequestVoteArgs, reply *RequestVoteReply) {
 	// Your code here.
 	rf.TimerReset()
-	reply.Term = rf.currentTerm
+	reply.Term = args.Term
 	rf.debugPrint(func() { fmt.Printf("(%d)Server %d received a vote %v.\n", rf.currentTerm, rf.me, args) })
 	// check currency and completion
 	if args.Term < rf.currentTerm {
+		reply.Term = rf.currentTerm
 		reply.VoteGranted = false
 	} else if rf.lastCommitted == 0 || (args.LastLogTerm >= rf.logEntries[rf.lastCommitted].term && args.LastLogIndex >= rf.lastCommitted) {
 		// you are the big brother ... or I have already voted for somebody!
@@ -344,6 +345,10 @@ func (rf *Raft) StateMachine() {
 		}
 		// then I am a candidate!
 		//ElectionProcess:
+		select {
+		case <-rf.toworkerChan:
+		default:
+		}
 		rf.debugPrint(func() { fmt.Printf("(%d)Server %d become candidate.\n", rf.currentTerm, rf.me) })
 		rf.currentTerm++
 		rf.votedFor = rf.me
@@ -398,6 +403,11 @@ func (rf *Raft) StateMachine() {
 		// TODO : lab2B lab2C
 
 		rf.debugPrint(func() { fmt.Printf("(%d)Server %d become leader.\n", rf.currentTerm, rf.me) })
+		successive := make([]bool, len(rf.peers))
+		// first set all to success..
+		for i := 0; i < len(successive); i++ {
+			successive[i] = true
+		}
 		rf.nextIndex = &[]int{}
 		rf.matchIndex = &[]int{}
 		for i := 0; i < len(rf.peers); i++ {
@@ -411,14 +421,37 @@ func (rf *Raft) StateMachine() {
 						reply := new(AppendEntriesReply)
 						args := AppendEntriesArgs{rf.currentTerm, rf.me, 0, rf.currentTerm, make([]Pair, 0), 0}
 						// send hbs
-						rf.sendAppendEntries(i, args, reply)
+						ok := rf.sendAppendEntries(i, args, reply)
+						successive[i] = ok
+						if !ok {
+							rf.debugPrint(func() { fmt.Printf("(%d)Server %d network failed.\n", rf.currentTerm, rf.me) })
+						}
 						// well this part will not care about what that stuff returns.
 					}
 				}(i)
 			}
 		}
-		select {
-		case <-rf.toworkerChan:
+		for rf.RUNNING_STATE {
+			towk := -1
+			select {
+			case towk = <-rf.toworkerChan:
+			default:
+			}
+			if towk != -1 {
+				break
+			}
+			failsum := 0
+			for x := 0; x < len(successive); x++ {
+				if !successive[x] {
+					failsum++
+				}
+			}
+			if failsum >= len(successive)/2 {
+				rf.debugPrint(func() {
+					fmt.Printf("(%d)Server %d reached fail limit(%d/%d).\n", rf.currentTerm, rf.me, failsum, len(successive)/2)
+				})
+				break
+			}
 		}
 	}
 }
