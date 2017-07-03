@@ -642,7 +642,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 
 	// Your initialization code here.
 
-	rf.DEBUG_SWITCH = true  // open debug output by default
+	rf.DEBUG_SWITCH = false // open debug output by default
 	rf.RUNNING_STATE = true // ensure the stm loop keeps going
 	rf.TIMER_STATE = true   // ensure continuous timer
 
