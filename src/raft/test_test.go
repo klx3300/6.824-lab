@@ -239,6 +239,7 @@ loop:
 		failed := false
 		cmds := []int{}
 		for index := range is {
+			fmt.Printf("(*)index is %v\n", index)
 			cmd := cfg.wait(index, servers, term)
 			if ix, ok := cmd.(int); ok {
 				if ix == -1 {

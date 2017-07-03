@@ -390,8 +390,12 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 	// That's the leader.
 	// Attempt to add this entry to stm
 	rf.debugPrint(func() { fmt.Printf("(%d)Server %d received client request %v\n", rf.currentTerm, rf.me, command) })
+	rf.mu.Lock()
 	rf.LogEntries = append(rf.LogEntries, Pair{command, rf.currentTerm})
-	return len(rf.LogEntries) - 1, rf.currentTerm, true
+	afterlen := len(rf.LogEntries) - 1
+	rf.mu.Unlock()
+	rf.debugPrint(func() { fmt.Printf("(%d)Server %d result entries are %v\n", rf.currentTerm, rf.me, rf.LogEntries) })
+	return afterlen, rf.currentTerm, true
 }
 
 //
