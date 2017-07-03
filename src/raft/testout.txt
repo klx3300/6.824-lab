@@ -1,400 +1,188 @@
+Test: concurrent Start()s ...
 (0)Server 0 become follower.
-(0)Server 1 become follower.
 (0)Server 2 become follower.
-(0)Server 3 become follower.
-Test: leader backs up quickly over incorrect follower logs ...
-(0)Server 4 become follower.
+(0)Server 1 become follower.
 Server 1 Timed out.
 (0)Server 1 become candidate.
-(1)Server 1 asks 2 for a vote {1 1 0 0}
-(1)Server 1 asks 3 for a vote {1 1 0 0}
-(1)Server 1 asks 4 for a vote {1 1 0 0}
 (1)Server 1 asks 0 for a vote {1 1 0 0}
-(0)Server 4 received a vote {1 1 0 0}.
-(1)Server 4 gives 1 a vote.
 (0)Server 0 received a vote {1 1 0 0}.
 (1)Server 0 gives 1 a vote.
-(1)Server 1 gets 2 votes.
-(1)Server 1 gets 3 votes.
 (1)Server 1 become leader.
-(0)Server 3 received a vote {1 1 0 0}.
-(1)Server 3 gives 1 a vote.
+(1)Server 1 gets 2 votes.
+(1)Server 1 asks 2 for a vote {1 1 0 0}
+(1)Server 1 have entries [{<nil> 0}]
+(1)Server 1 send 0 args {1 1 0 0 [{<nil> 0}] 0}
+(0)Server 2 received a vote {1 1 0 0}.
+(1)Server 2 gives 1 a vote.
+(1)Sever 0 have a AE rpc {1 1 0 0 [{<nil> 0}] 0}
+(1)Server 1 have entries [{<nil> 0}]
+(1)Server 1 gets 3 votes.
+(1)Server 1 send 2 args {1 1 0 0 [{<nil> 0}] 0}
+(1)Server 0 former logs are [{<nil> 0}]
+(1)Server 1 network is working.
+(1)Sever 2 have a AE rpc {1 1 0 0 [{<nil> 0}] 0}
+(1)Server 2 former logs are [{<nil> 0}]
+(1)Server 1 network is working.
+(1)Server 1 have entries [{<nil> 0}]
+(1)Server 1 send 0 args {1 1 0 0 [{<nil> 0}] 0}
+(1)Sever 0 have a AE rpc {1 1 0 0 [{<nil> 0}] 0}
+(1)Server 0 former logs are [{<nil> 0}]
 (1)Server 1 have entries [{<nil> 0}]
 (1)Server 1 send 2 args {1 1 0 0 [{<nil> 0}] 0}
-(1)Server 1 gets 4 votes.
+(1)Server 1 network is working.
+(1)Sever 2 have a AE rpc {1 1 0 0 [{<nil> 0}] 0}
+(1)Server 2 former logs are [{<nil> 0}]
+(1)Server 1 network is working.
 (1)Server 1 have entries [{<nil> 0}]
 (1)Server 1 send 0 args {1 1 0 0 [{<nil> 0}] 0}
 (1)Sever 0 have a AE rpc {1 1 0 0 [{<nil> 0}] 0}
 (1)Server 0 former logs are [{<nil> 0}]
 (1)Server 1 network is working.
 (1)Server 1 have entries [{<nil> 0}]
-(1)Server 1 send 3 args {1 1 0 0 [{<nil> 0}] 0}
-(0)Sever 2 have a AE rpc {1 1 0 0 [{<nil> 0}] 0}
-(0)Server 2 received a vote {1 1 0 0}.
-(1)Server 2 gives 1 a vote.
-(1)Server 1 gets 5 votes.
+(1)Server 1 send 2 args {1 1 0 0 [{<nil> 0}] 0}
+(1)Sever 2 have a AE rpc {1 1 0 0 [{<nil> 0}] 0}
 (1)Server 2 former logs are [{<nil> 0}]
-(1)Sever 3 have a AE rpc {1 1 0 0 [{<nil> 0}] 0}
-(1)Server 3 former logs are [{<nil> 0}]
-(1)Server 1 network is working.
 (1)Server 1 network is working.
 (1)Server 1 have entries [{<nil> 0}]
-(1)Server 1 send 4 args {1 1 0 0 [{<nil> 0}] 0}
-(1)Sever 4 have a AE rpc {1 1 0 0 [{<nil> 0}] 0}
-(1)Server 4 former logs are [{<nil> 0}]
-(1)Server 1 network is working.
-(1)Server 1 received client request 1686890597111537134
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 0 args {1 1 0 0 [{<nil> 0} {1686890597111537134 1}] 0}
-(1)Sever 0 have a AE rpc {1 1 0 0 [{<nil> 0} {1686890597111537134 1}] 0}
+(1)Server 1 send 0 args {1 1 0 0 [{<nil> 0}] 0}
+(1)Sever 0 have a AE rpc {1 1 0 0 [{<nil> 0}] 0}
 (1)Server 0 former logs are [{<nil> 0}]
-(1)Server 0 received args {1 1 0 0 [{<nil> 0} {1686890597111537134 1}] 0}
-(1)Server 0 updated result is [{<nil> 0} {1686890597111537134 1}]
 (1)Server 1 network is working.
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 2 args {1 1 0 0 [{<nil> 0} {1686890597111537134 1}] 0}
-(1)Sever 2 have a AE rpc {1 1 0 0 [{<nil> 0} {1686890597111537134 1}] 0}
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
+(1)Server 1 have entries [{<nil> 0}]
+(1)Server 1 send 2 args {1 1 0 0 [{<nil> 0}] 0}
+(1)Sever 2 have a AE rpc {1 1 0 0 [{<nil> 0}] 0}
 (1)Server 2 former logs are [{<nil> 0}]
-(1)Server 1 send 3 args {1 1 0 0 [{<nil> 0} {1686890597111537134 1}] 0}
-(1)Server 2 received args {1 1 0 0 [{<nil> 0} {1686890597111537134 1}] 0}
-(1)Server 2 updated result is [{<nil> 0} {1686890597111537134 1}]
 (1)Server 1 network is working.
-(1)Sever 3 have a AE rpc {1 1 0 0 [{<nil> 0} {1686890597111537134 1}] 0}
-(1)Server 3 former logs are [{<nil> 0}]
-(1)Server 3 received args {1 1 0 0 [{<nil> 0} {1686890597111537134 1}] 0}
-(1)Server 3 updated result is [{<nil> 0} {1686890597111537134 1}]
+(1)Server 1 received client request 1
+(1)Server 1 received client request 104
+(1)Server 1 received client request 100
+(1)Server 1 received client request 101
+(1)Server 1 received client request 102
+(1)Server 1 received client request 103
+(1)Server 1 have matchIndex record [0 0 0]
+(1)Server 1 attempt to commit 1/7 with 1 agreement
+(1)Server 1 have entries [{<nil> 0} {1 1} {104 1} {100 1} {101 1} {102 1} {103 1}]
+(1)Server 1 send 0 args {1 1 0 0 [{<nil> 0} {1 1} {104 1} {100 1} {101 1} {102 1} {103 1}] 0}
+(1)Sever 0 have a AE rpc {1 1 0 0 [{<nil> 0} {1 1} {104 1} {100 1} {101 1} {102 1} {103 1}] 0}
+(1)Server 0 former logs are [{<nil> 0}]
+(1)Server 0 received args {1 1 0 0 [{<nil> 0} {1 1} {104 1} {100 1} {101 1} {102 1} {103 1}] 0}
+(1)Server 0 updated result is [{<nil> 0} {1 1} {104 1} {100 1} {101 1} {102 1} {103 1}]
 (1)Server 1 network is working.
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 4 args {1 1 0 0 [{<nil> 0} {1686890597111537134 1}] 0}
-(1)Sever 4 have a AE rpc {1 1 0 0 [{<nil> 0} {1686890597111537134 1}] 0}
-(1)Server 4 former logs are [{<nil> 0}]
-(1)Server 4 received args {1 1 0 0 [{<nil> 0} {1686890597111537134 1}] 0}
-(1)Server 4 updated result is [{<nil> 0} {1686890597111537134 1}]
+(1)Server 1 have entries [{<nil> 0} {1 1} {104 1} {100 1} {101 1} {102 1} {103 1}]
+(1)Server 1 send 2 args {1 1 0 0 [{<nil> 0} {1 1} {104 1} {100 1} {101 1} {102 1} {103 1}] 0}
+(1)Sever 2 have a AE rpc {1 1 0 0 [{<nil> 0} {1 1} {104 1} {100 1} {101 1} {102 1} {103 1}] 0}
+(1)Server 2 former logs are [{<nil> 0}]
+(1)Server 2 received args {1 1 0 0 [{<nil> 0} {1 1} {104 1} {100 1} {101 1} {102 1} {103 1}] 0}
+(1)Server 2 updated result is [{<nil> 0} {1 1} {104 1} {100 1} {101 1} {102 1} {103 1}]
 (1)Server 1 network is working.
-(1)Server 1 have matchIndex record [1 0 1 1 1]
-(1)Server 1 attempt to commit 1/2 with 5 agreement
-(1)Server 1 commited change 1,{1686890597111537134 1}
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 0 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 0 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 0 former logs are [{<nil> 0} {1686890597111537134 1}]
+(1)Server 1 have matchIndex record [6 0 6]
+(1)Server 1 attempt to commit 1/7 with 3 agreement
+(1)Server 1 commited change 1,{1 1}
+(1)Server 1 have entries [{<nil> 0} {1 1} {104 1} {100 1} {101 1} {102 1} {103 1}]
+(1)Server 1 send 0 args {1 1 6 1 [{103 1}] 1}
+(1)Sever 0 have a AE rpc {1 1 6 1 [{103 1}] 1}
+(1)Server 0 former logs are [{<nil> 0} {1 1} {104 1} {100 1} {101 1} {102 1} {103 1}]
 (1)Server 1 network is working.
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 2 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 2 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 2 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 3 args {1 1 1 1 [{1686890597111537134 1}] 1}
+(1)Server 1 have entries [{<nil> 0} {1 1} {104 1} {100 1} {101 1} {102 1} {103 1}]
+(1)Server 1 send 2 args {1 1 6 1 [{103 1}] 1}
+(1)Sever 2 have a AE rpc {1 1 6 1 [{103 1}] 1}
+(1)Server 2 former logs are [{<nil> 0} {1 1} {104 1} {100 1} {101 1} {102 1} {103 1}]
 (1)Server 1 network is working.
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Sever 3 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 3 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 4 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 1 network is working.
-(1)Sever 4 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 4 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 network is working.
-(1)Server 0 attempt to commit 1/2 with cond 1,0
-(1)Server 4 attempt to commit 1/2 with cond 1,0
-(1)Server 0 commited change 1,{1686890597111537134 1}
-(1)Server 4 commited change 1,{1686890597111537134 1}
-(1)Server 3 attempt to commit 1/2 with cond 1,0
-(1)Server 3 commited change 1,{1686890597111537134 1}
-(1)Server 2 attempt to commit 1/2 with cond 1,0
-(1)Server 2 commited change 1,{1686890597111537134 1}
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 0 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 0 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 0 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 network is working.
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 2 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 2 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 2 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 network is working.
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 3 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 4 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 3 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 3 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 network is working.
-(1)Sever 4 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 4 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 network is working.
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 0 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 0 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 0 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 network is working.
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 2 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 2 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 2 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 network is working.
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 3 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 3 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 3 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 network is working.
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 4 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 4 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 4 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 network is working.
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 0 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 0 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 0 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 network is working.
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 2 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 2 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 2 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 network is working.
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 3 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 1 send 4 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 3 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 4 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 4 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 3 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 network is working.
-(1)Server 1 network is working.
+(1)Server 0 attempt to commit 1/7 with cond 1,0
+(1)Server 2 attempt to commit 1/7 with cond 1,0
+(1)Server 0 commited change 1,{1 1}
+(1)Server 2 commited change 1,{1 1}
+(1)Server 1 have matchIndex record [6 0 6]
+(1)Server 1 attempt to commit 2/7 with 3 agreement
+(1)Server 1 commited change 2,{104 1}
 Server 1 Timed out.
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 0 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 0 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 0 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 2 args {1 1 1 1 [{1686890597111537134 1}] 1}
+(1)Server 1 have entries [{<nil> 0} {1 1} {104 1} {100 1} {101 1} {102 1} {103 1}]
+(1)Server 1 send 0 args {1 1 6 1 [{103 1}] 2}
+(1)Sever 0 have a AE rpc {1 1 6 1 [{103 1}] 2}
+(1)Server 0 former logs are [{<nil> 0} {1 1} {104 1} {100 1} {101 1} {102 1} {103 1}]
 (1)Server 1 network is working.
-(1)Sever 2 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 2 former logs are [{<nil> 0} {1686890597111537134 1}]
+(1)Server 1 have entries [{<nil> 0} {1 1} {104 1} {100 1} {101 1} {102 1} {103 1}]
+(1)Server 1 send 2 args {1 1 6 1 [{103 1}] 2}
+(1)Sever 2 have a AE rpc {1 1 6 1 [{103 1}] 2}
+(1)Server 2 former logs are [{<nil> 0} {1 1} {104 1} {100 1} {101 1} {102 1} {103 1}]
 (1)Server 1 network is working.
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 3 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 4 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 4 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 4 former logs are [{<nil> 0} {1686890597111537134 1}]
+(1)Server 2 attempt to commit 2/7 with cond 2,1
+(1)Server 0 attempt to commit 2/7 with cond 2,1
+(1)Server 2 commited change 2,{104 1}
+(1)Server 0 commited change 2,{104 1}
+(1)Server 1 have matchIndex record [6 0 6]
+(1)Server 1 attempt to commit 3/7 with 3 agreement
+(1)Server 1 commited change 3,{100 1}
+(1)Server 1 have entries [{<nil> 0} {1 1} {104 1} {100 1} {101 1} {102 1} {103 1}]
+(1)Server 1 send 0 args {1 1 6 1 [{103 1}] 3}
+(1)Sever 0 have a AE rpc {1 1 6 1 [{103 1}] 3}
+(1)Server 0 former logs are [{<nil> 0} {1 1} {104 1} {100 1} {101 1} {102 1} {103 1}]
 (1)Server 1 network is working.
-(1)Sever 3 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 3 former logs are [{<nil> 0} {1686890597111537134 1}]
+(1)Server 1 have entries [{<nil> 0} {1 1} {104 1} {100 1} {101 1} {102 1} {103 1}]
+(1)Server 1 send 2 args {1 1 6 1 [{103 1}] 3}
+(1)Sever 2 have a AE rpc {1 1 6 1 [{103 1}] 3}
+(1)Server 2 former logs are [{<nil> 0} {1 1} {104 1} {100 1} {101 1} {102 1} {103 1}]
 (1)Server 1 network is working.
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 0 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 2 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 0 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 0 former logs are [{<nil> 0} {1686890597111537134 1}]
+(1)Server 2 attempt to commit 3/7 with cond 3,2
+(1)Server 2 commited change 3,{100 1}
+(1)Server 0 attempt to commit 3/7 with cond 3,2
+(1)Server 1 have matchIndex record [6 0 6]
+(1)Server 1 attempt to commit 4/7 with 3 agreement
+(1)Server 1 commited change 4,{101 1}
+(1)Server 0 commited change 3,{100 1}
+(1)Server 1 have entries [{<nil> 0} {1 1} {104 1} {100 1} {101 1} {102 1} {103 1}]
+(1)Server 1 send 0 args {1 1 6 1 [{103 1}] 4}
+(1)Sever 0 have a AE rpc {1 1 6 1 [{103 1}] 4}
+(1)Server 0 former logs are [{<nil> 0} {1 1} {104 1} {100 1} {101 1} {102 1} {103 1}]
 (1)Server 1 network is working.
-(1)Sever 2 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 2 former logs are [{<nil> 0} {1686890597111537134 1}]
+(1)Server 1 have entries [{<nil> 0} {1 1} {104 1} {100 1} {101 1} {102 1} {103 1}]
+(1)Server 1 send 2 args {1 1 6 1 [{103 1}] 4}
+(1)Sever 2 have a AE rpc {1 1 6 1 [{103 1}] 4}
+(1)Server 2 former logs are [{<nil> 0} {1 1} {104 1} {100 1} {101 1} {102 1} {103 1}]
 (1)Server 1 network is working.
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 4 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 4 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 4 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 3 args {1 1 1 1 [{1686890597111537134 1}] 1}
+(1)Server 2 attempt to commit 4/7 with cond 4,3
+(1)Server 2 commited change 4,{101 1}
+(1)Server 1 have matchIndex record [6 0 6]
+(1)Server 1 attempt to commit 5/7 with 3 agreement
+(1)Server 1 commited change 5,{102 1}
+(1)Server 0 attempt to commit 4/7 with cond 4,3
+(1)Server 0 commited change 4,{101 1}
+(1)Server 1 have entries [{<nil> 0} {1 1} {104 1} {100 1} {101 1} {102 1} {103 1}]
+(1)Server 1 send 0 args {1 1 6 1 [{103 1}] 5}
+(1)Sever 0 have a AE rpc {1 1 6 1 [{103 1}] 5}
+(1)Server 0 former logs are [{<nil> 0} {1 1} {104 1} {100 1} {101 1} {102 1} {103 1}]
 (1)Server 1 network is working.
-(1)Sever 3 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 3 former logs are [{<nil> 0} {1686890597111537134 1}]
+(1)Server 1 have entries [{<nil> 0} {1 1} {104 1} {100 1} {101 1} {102 1} {103 1}]
+(1)Server 1 send 2 args {1 1 6 1 [{103 1}] 5}
+(1)Sever 2 have a AE rpc {1 1 6 1 [{103 1}] 5}
+(1)Server 2 former logs are [{<nil> 0} {1 1} {104 1} {100 1} {101 1} {102 1} {103 1}]
 (1)Server 1 network is working.
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 0 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 0 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 0 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 2 args {1 1 1 1 [{1686890597111537134 1}] 1}
+(1)Server 2 attempt to commit 5/7 with cond 5,4
+(1)Server 2 commited change 5,{102 1}
+(1)Server 1 have matchIndex record [6 0 6]
+(1)Server 1 attempt to commit 6/7 with 3 agreement
+(1)Server 1 commited change 6,{103 1}
+(1)Server 0 attempt to commit 5/7 with cond 5,4
+(1)Server 0 commited change 5,{102 1}
+(1)Server 1 have entries [{<nil> 0} {1 1} {104 1} {100 1} {101 1} {102 1} {103 1}]
+(1)Server 1 send 0 args {1 1 6 1 [{103 1}] 6}
+(1)Sever 0 have a AE rpc {1 1 6 1 [{103 1}] 6}
+(1)Server 0 former logs are [{<nil> 0} {1 1} {104 1} {100 1} {101 1} {102 1} {103 1}]
 (1)Server 1 network is working.
-(1)Sever 2 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 4 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 2 former logs are [{<nil> 0} {1686890597111537134 1}]
+(1)Server 1 have entries [{<nil> 0} {1 1} {104 1} {100 1} {101 1} {102 1} {103 1}]
+(1)Server 1 send 2 args {1 1 6 1 [{103 1}] 6}
+(1)Sever 2 have a AE rpc {1 1 6 1 [{103 1}] 6}
+(1)Server 2 former logs are [{<nil> 0} {1 1} {104 1} {100 1} {101 1} {102 1} {103 1}]
 (1)Server 1 network is working.
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 3 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 4 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 4 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 network is working.
-(1)Sever 3 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 3 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 network is working.
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 0 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 0 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 0 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 network is working.
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 2 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 4 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 2 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 4 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 4 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 3 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 1 network is working.
-(1)Server 2 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 network is working.
-(1)Sever 3 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 3 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 network is working.
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 0 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 0 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 0 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 network is working.
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 2 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 2 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 2 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 4 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 1 network is working.
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 3 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 4 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 3 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 4 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 3 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 network is working.
-(1)Server 1 network is working.
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 0 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 0 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 0 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 network is working.
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 2 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 2 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 2 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 3 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 1 network is working.
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 4 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 4 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 4 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Sever 3 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 3 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 network is working.
-(1)Server 1 network is working.
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 0 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 0 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 0 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 network is working.
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 2 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 2 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 2 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 network is working.
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 4 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 4 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 4 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 network is working.
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 3 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 3 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 3 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 network is working.
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 0 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 0 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 0 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 network is working.
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 2 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 2 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 2 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 network is working.
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 4 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 4 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 4 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 network is working.
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 send 3 args {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Sever 3 have a AE rpc {1 1 1 1 [{1686890597111537134 1}] 1}
-(1)Server 3 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 1 network is working.
-(1)Server 1 received client request 5256350987530565902
-(1)Server 1 received client request 3647040171807567999
-(1)Server 1 received client request 1654976037062169039
-(1)Server 1 received client request 8284549586070100080
-(1)Server 1 received client request 4141880329960087045
-(1)Server 1 received client request 4733158575735168199
-(1)Server 1 received client request 7841836261720927299
-(1)Server 1 received client request 5362967352606225148
-(1)Server 1 received client request 5319145823980581301
-(1)Server 1 received client request 4553111735324884799
-(1)Server 1 received client request 3770510508326459256
-(1)Server 1 received client request 6574285499896900470
-(1)Server 1 received client request 3786219420222646990
-(1)Server 1 received client request 1424449103303574069
-(1)Server 1 received client request 3711086445993739490
-(1)Server 1 received client request 2446496765656198436
-(1)Server 1 received client request 4280012631069152238
-(1)Server 1 received client request 1839686186394844174
-(1)Server 1 received client request 918890687449784615
-(1)Server 1 received client request 5773204892054466266
-(1)Server 1 received client request 4470387094471635649
-(1)Server 1 received client request 7290236725661687137
-(1)Server 1 received client request 921509514035321031
-(1)Server 1 received client request 1032488287977344056
-(1)Server 1 received client request 9099718216835009785
-(1)Server 1 received client request 610248019722751006
-(1)Server 1 received client request 1096176299223076366
-(1)Server 1 received client request 2619345257310020096
-(1)Server 1 received client request 3317489243654081331
-(1)Server 1 received client request 8633838429011360311
-(1)Server 1 received client request 8309210421396159505
-(1)Server 1 received client request 5238662993947095764
-(1)Server 1 received client request 4748715673264726913
-(1)Server 1 received client request 7041971185396299298
-(1)Server 1 received client request 6426236581173456050
-(1)Server 1 received client request 641166769453203497
-(1)Server 1 received client request 2331321274294606325
-(1)Server 1 received client request 7755448055899339244
-(1)Server 1 received client request 1669491231720144475
-(1)Server 1 received client request 8143073569563836760
-(1)Server 1 received client request 4955705715734532177
-(1)Server 1 received client request 4579320283438954107
-(1)Server 1 received client request 5076492877108058429
-(1)Server 1 received client request 875456751407501146
-(1)Server 1 received client request 2610274047608160936
-(1)Server 1 received client request 1175608964215319627
-(1)Server 1 received client request 1092779152374970460
-(1)Server 1 received client request 5385737071389113833
-(1)Server 1 received client request 4009451303716770996
-(1)Server 1 received client request 7209447491725820287
-(1)Server 1 have matchIndex record [1 0 1 1 1]
-(1)Server 1 attempt to commit 2/52 with 1 agreement
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1} {5256350987530565902 1} {3647040171807567999 1} {1654976037062169039 1} {8284549586070100080 1} {4141880329960087045 1} {4733158575735168199 1} {7841836261720927299 1} {5362967352606225148 1} {5319145823980581301 1} {4553111735324884799 1} {3770510508326459256 1} {6574285499896900470 1} {3786219420222646990 1} {1424449103303574069 1} {3711086445993739490 1} {2446496765656198436 1} {4280012631069152238 1} {1839686186394844174 1} {918890687449784615 1} {5773204892054466266 1} {4470387094471635649 1} {7290236725661687137 1} {921509514035321031 1} {1032488287977344056 1} {9099718216835009785 1} {610248019722751006 1} {1096176299223076366 1} {2619345257310020096 1} {3317489243654081331 1} {8633838429011360311 1} {8309210421396159505 1} {5238662993947095764 1} {4748715673264726913 1} {7041971185396299298 1} {6426236581173456050 1} {641166769453203497 1} {2331321274294606325 1} {7755448055899339244 1} {1669491231720144475 1} {8143073569563836760 1} {4955705715734532177 1} {4579320283438954107 1} {5076492877108058429 1} {875456751407501146 1} {2610274047608160936 1} {1175608964215319627 1} {1092779152374970460 1} {5385737071389113833 1} {4009451303716770996 1} {7209447491725820287 1}]
-(1)Server 1 send 0 args {1 1 1 1 [{1686890597111537134 1} {5256350987530565902 1} {3647040171807567999 1} {1654976037062169039 1} {8284549586070100080 1} {4141880329960087045 1} {4733158575735168199 1} {7841836261720927299 1} {5362967352606225148 1} {5319145823980581301 1} {4553111735324884799 1} {3770510508326459256 1} {6574285499896900470 1} {3786219420222646990 1} {1424449103303574069 1} {3711086445993739490 1} {2446496765656198436 1} {4280012631069152238 1} {1839686186394844174 1} {918890687449784615 1} {5773204892054466266 1} {4470387094471635649 1} {7290236725661687137 1} {921509514035321031 1} {1032488287977344056 1} {9099718216835009785 1} {610248019722751006 1} {1096176299223076366 1} {2619345257310020096 1} {3317489243654081331 1} {8633838429011360311 1} {8309210421396159505 1} {5238662993947095764 1} {4748715673264726913 1} {7041971185396299298 1} {6426236581173456050 1} {641166769453203497 1} {2331321274294606325 1} {7755448055899339244 1} {1669491231720144475 1} {8143073569563836760 1} {4955705715734532177 1} {4579320283438954107 1} {5076492877108058429 1} {875456751407501146 1} {2610274047608160936 1} {1175608964215319627 1} {1092779152374970460 1} {5385737071389113833 1} {4009451303716770996 1} {7209447491725820287 1}] 1}
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1} {5256350987530565902 1} {3647040171807567999 1} {1654976037062169039 1} {8284549586070100080 1} {4141880329960087045 1} {4733158575735168199 1} {7841836261720927299 1} {5362967352606225148 1} {5319145823980581301 1} {4553111735324884799 1} {3770510508326459256 1} {6574285499896900470 1} {3786219420222646990 1} {1424449103303574069 1} {3711086445993739490 1} {2446496765656198436 1} {4280012631069152238 1} {1839686186394844174 1} {918890687449784615 1} {5773204892054466266 1} {4470387094471635649 1} {7290236725661687137 1} {921509514035321031 1} {1032488287977344056 1} {9099718216835009785 1} {610248019722751006 1} {1096176299223076366 1} {2619345257310020096 1} {3317489243654081331 1} {8633838429011360311 1} {8309210421396159505 1} {5238662993947095764 1} {4748715673264726913 1} {7041971185396299298 1} {6426236581173456050 1} {641166769453203497 1} {2331321274294606325 1} {7755448055899339244 1} {1669491231720144475 1} {8143073569563836760 1} {4955705715734532177 1} {4579320283438954107 1} {5076492877108058429 1} {875456751407501146 1} {2610274047608160936 1} {1175608964215319627 1} {1092779152374970460 1} {5385737071389113833 1} {4009451303716770996 1} {7209447491725820287 1}]
-(1)Server 1 send 2 args {1 1 1 1 [{1686890597111537134 1} {5256350987530565902 1} {3647040171807567999 1} {1654976037062169039 1} {8284549586070100080 1} {4141880329960087045 1} {4733158575735168199 1} {7841836261720927299 1} {5362967352606225148 1} {5319145823980581301 1} {4553111735324884799 1} {3770510508326459256 1} {6574285499896900470 1} {3786219420222646990 1} {1424449103303574069 1} {3711086445993739490 1} {2446496765656198436 1} {4280012631069152238 1} {1839686186394844174 1} {918890687449784615 1} {5773204892054466266 1} {4470387094471635649 1} {7290236725661687137 1} {921509514035321031 1} {1032488287977344056 1} {9099718216835009785 1} {610248019722751006 1} {1096176299223076366 1} {2619345257310020096 1} {3317489243654081331 1} {8633838429011360311 1} {8309210421396159505 1} {5238662993947095764 1} {4748715673264726913 1} {7041971185396299298 1} {6426236581173456050 1} {641166769453203497 1} {2331321274294606325 1} {7755448055899339244 1} {1669491231720144475 1} {8143073569563836760 1} {4955705715734532177 1} {4579320283438954107 1} {5076492877108058429 1} {875456751407501146 1} {2610274047608160936 1} {1175608964215319627 1} {1092779152374970460 1} {5385737071389113833 1} {4009451303716770996 1} {7209447491725820287 1}] 1}
-(1)Sever 2 have a AE rpc {1 1 1 1 [{1686890597111537134 1} {5256350987530565902 1} {3647040171807567999 1} {1654976037062169039 1} {8284549586070100080 1} {4141880329960087045 1} {4733158575735168199 1} {7841836261720927299 1} {5362967352606225148 1} {5319145823980581301 1} {4553111735324884799 1} {3770510508326459256 1} {6574285499896900470 1} {3786219420222646990 1} {1424449103303574069 1} {3711086445993739490 1} {2446496765656198436 1} {4280012631069152238 1} {1839686186394844174 1} {918890687449784615 1} {5773204892054466266 1} {4470387094471635649 1} {7290236725661687137 1} {921509514035321031 1} {1032488287977344056 1} {9099718216835009785 1} {610248019722751006 1} {1096176299223076366 1} {2619345257310020096 1} {3317489243654081331 1} {8633838429011360311 1} {8309210421396159505 1} {5238662993947095764 1} {4748715673264726913 1} {7041971185396299298 1} {6426236581173456050 1} {641166769453203497 1} {2331321274294606325 1} {7755448055899339244 1} {1669491231720144475 1} {8143073569563836760 1} {4955705715734532177 1} {4579320283438954107 1} {5076492877108058429 1} {875456751407501146 1} {2610274047608160936 1} {1175608964215319627 1} {1092779152374970460 1} {5385737071389113833 1} {4009451303716770996 1} {7209447491725820287 1}] 1}
-(1)Server 2 former logs are [{<nil> 0} {1686890597111537134 1}]
-(1)Server 2 received args {1 1 1 1 [{1686890597111537134 1} {5256350987530565902 1} {3647040171807567999 1} {1654976037062169039 1} {8284549586070100080 1} {4141880329960087045 1} {4733158575735168199 1} {7841836261720927299 1} {5362967352606225148 1} {5319145823980581301 1} {4553111735324884799 1} {3770510508326459256 1} {6574285499896900470 1} {3786219420222646990 1} {1424449103303574069 1} {3711086445993739490 1} {2446496765656198436 1} {4280012631069152238 1} {1839686186394844174 1} {918890687449784615 1} {5773204892054466266 1} {4470387094471635649 1} {7290236725661687137 1} {921509514035321031 1} {1032488287977344056 1} {9099718216835009785 1} {610248019722751006 1} {1096176299223076366 1} {2619345257310020096 1} {3317489243654081331 1} {8633838429011360311 1} {8309210421396159505 1} {5238662993947095764 1} {4748715673264726913 1} {7041971185396299298 1} {6426236581173456050 1} {641166769453203497 1} {2331321274294606325 1} {7755448055899339244 1} {1669491231720144475 1} {8143073569563836760 1} {4955705715734532177 1} {4579320283438954107 1} {5076492877108058429 1} {875456751407501146 1} {2610274047608160936 1} {1175608964215319627 1} {1092779152374970460 1} {5385737071389113833 1} {4009451303716770996 1} {7209447491725820287 1}] 1}
-(1)Server 2 updated result is [{<nil> 0} {1686890597111537134 1} {5256350987530565902 1} {3647040171807567999 1} {1654976037062169039 1} {8284549586070100080 1} {4141880329960087045 1} {4733158575735168199 1} {7841836261720927299 1} {5362967352606225148 1} {5319145823980581301 1} {4553111735324884799 1} {3770510508326459256 1} {6574285499896900470 1} {3786219420222646990 1} {1424449103303574069 1} {3711086445993739490 1} {2446496765656198436 1} {4280012631069152238 1} {1839686186394844174 1} {918890687449784615 1} {5773204892054466266 1} {4470387094471635649 1} {7290236725661687137 1} {921509514035321031 1} {1032488287977344056 1} {9099718216835009785 1} {610248019722751006 1} {1096176299223076366 1} {2619345257310020096 1} {3317489243654081331 1} {8633838429011360311 1} {8309210421396159505 1} {5238662993947095764 1} {4748715673264726913 1} {7041971185396299298 1} {6426236581173456050 1} {641166769453203497 1} {2331321274294606325 1} {7755448055899339244 1} {1669491231720144475 1} {8143073569563836760 1} {4955705715734532177 1} {4579320283438954107 1} {5076492877108058429 1} {875456751407501146 1} {2610274047608160936 1} {1175608964215319627 1} {1092779152374970460 1} {5385737071389113833 1} {4009451303716770996 1} {7209447491725820287 1}]
-(1)Server 1 network is working.
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1} {5256350987530565902 1} {3647040171807567999 1} {1654976037062169039 1} {8284549586070100080 1} {4141880329960087045 1} {4733158575735168199 1} {7841836261720927299 1} {5362967352606225148 1} {5319145823980581301 1} {4553111735324884799 1} {3770510508326459256 1} {6574285499896900470 1} {3786219420222646990 1} {1424449103303574069 1} {3711086445993739490 1} {2446496765656198436 1} {4280012631069152238 1} {1839686186394844174 1} {918890687449784615 1} {5773204892054466266 1} {4470387094471635649 1} {7290236725661687137 1} {921509514035321031 1} {1032488287977344056 1} {9099718216835009785 1} {610248019722751006 1} {1096176299223076366 1} {2619345257310020096 1} {3317489243654081331 1} {8633838429011360311 1} {8309210421396159505 1} {5238662993947095764 1} {4748715673264726913 1} {7041971185396299298 1} {6426236581173456050 1} {641166769453203497 1} {2331321274294606325 1} {7755448055899339244 1} {1669491231720144475 1} {8143073569563836760 1} {4955705715734532177 1} {4579320283438954107 1} {5076492877108058429 1} {875456751407501146 1} {2610274047608160936 1} {1175608964215319627 1} {1092779152374970460 1} {5385737071389113833 1} {4009451303716770996 1} {7209447491725820287 1}]
-(1)Server 1 send 3 args {1 1 1 1 [{1686890597111537134 1} {5256350987530565902 1} {3647040171807567999 1} {1654976037062169039 1} {8284549586070100080 1} {4141880329960087045 1} {4733158575735168199 1} {7841836261720927299 1} {5362967352606225148 1} {5319145823980581301 1} {4553111735324884799 1} {3770510508326459256 1} {6574285499896900470 1} {3786219420222646990 1} {1424449103303574069 1} {3711086445993739490 1} {2446496765656198436 1} {4280012631069152238 1} {1839686186394844174 1} {918890687449784615 1} {5773204892054466266 1} {4470387094471635649 1} {7290236725661687137 1} {921509514035321031 1} {1032488287977344056 1} {9099718216835009785 1} {610248019722751006 1} {1096176299223076366 1} {2619345257310020096 1} {3317489243654081331 1} {8633838429011360311 1} {8309210421396159505 1} {5238662993947095764 1} {4748715673264726913 1} {7041971185396299298 1} {6426236581173456050 1} {641166769453203497 1} {2331321274294606325 1} {7755448055899339244 1} {1669491231720144475 1} {8143073569563836760 1} {4955705715734532177 1} {4579320283438954107 1} {5076492877108058429 1} {875456751407501146 1} {2610274047608160936 1} {1175608964215319627 1} {1092779152374970460 1} {5385737071389113833 1} {4009451303716770996 1} {7209447491725820287 1}] 1}
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1} {5256350987530565902 1} {3647040171807567999 1} {1654976037062169039 1} {8284549586070100080 1} {4141880329960087045 1} {4733158575735168199 1} {7841836261720927299 1} {5362967352606225148 1} {5319145823980581301 1} {4553111735324884799 1} {3770510508326459256 1} {6574285499896900470 1} {3786219420222646990 1} {1424449103303574069 1} {3711086445993739490 1} {2446496765656198436 1} {4280012631069152238 1} {1839686186394844174 1} {918890687449784615 1} {5773204892054466266 1} {4470387094471635649 1} {7290236725661687137 1} {921509514035321031 1} {1032488287977344056 1} {9099718216835009785 1} {610248019722751006 1} {1096176299223076366 1} {2619345257310020096 1} {3317489243654081331 1} {8633838429011360311 1} {8309210421396159505 1} {5238662993947095764 1} {4748715673264726913 1} {7041971185396299298 1} {6426236581173456050 1} {641166769453203497 1} {2331321274294606325 1} {7755448055899339244 1} {1669491231720144475 1} {8143073569563836760 1} {4955705715734532177 1} {4579320283438954107 1} {5076492877108058429 1} {875456751407501146 1} {2610274047608160936 1} {1175608964215319627 1} {1092779152374970460 1} {5385737071389113833 1} {4009451303716770996 1} {7209447491725820287 1}]
-(1)Server 1 send 4 args {1 1 1 1 [{1686890597111537134 1} {5256350987530565902 1} {3647040171807567999 1} {1654976037062169039 1} {8284549586070100080 1} {4141880329960087045 1} {4733158575735168199 1} {7841836261720927299 1} {5362967352606225148 1} {5319145823980581301 1} {4553111735324884799 1} {3770510508326459256 1} {6574285499896900470 1} {3786219420222646990 1} {1424449103303574069 1} {3711086445993739490 1} {2446496765656198436 1} {4280012631069152238 1} {1839686186394844174 1} {918890687449784615 1} {5773204892054466266 1} {4470387094471635649 1} {7290236725661687137 1} {921509514035321031 1} {1032488287977344056 1} {9099718216835009785 1} {610248019722751006 1} {1096176299223076366 1} {2619345257310020096 1} {3317489243654081331 1} {8633838429011360311 1} {8309210421396159505 1} {5238662993947095764 1} {4748715673264726913 1} {7041971185396299298 1} {6426236581173456050 1} {641166769453203497 1} {2331321274294606325 1} {7755448055899339244 1} {1669491231720144475 1} {8143073569563836760 1} {4955705715734532177 1} {4579320283438954107 1} {5076492877108058429 1} {875456751407501146 1} {2610274047608160936 1} {1175608964215319627 1} {1092779152374970460 1} {5385737071389113833 1} {4009451303716770996 1} {7209447491725820287 1}] 1}
-(1)Server 1 have matchIndex record [1 0 51 1 1]
-(1)Server 1 attempt to commit 2/52 with 2 agreement
-(1)Server 1 have entries [{<nil> 0} {1686890597111537134 1} {5256350987530565902 1} {3647040171807567999 1} {1654976037062169039 1} {8284549586070100080 1} {4141880329960087045 1} {4733158575735168199 1} {7841836261720927299 1} {5362967352606225148 1} {5319145823980581301 1} {4553111735324884799 1} {3770510508326459256 1} {6574285499896900470 1} {3786219420222646990 1} {1424449103303574069 1} {3711086445993739490 1} {2446496765656198436 1} {4280012631069152238 1} {1839686186394844174 1} {918890687449784615 1} {5773204892054466266 1} {4470387094471635649 1} {7290236725661687137 1} {921509514035321031 1} {1032488287977344056 1} {9099718216835009785 1} {610248019722751006 1} {1096176299223076366 1} {2619345257310020096 1} {3317489243654081331 1} {8633838429011360311 1} {8309210421396159505 1} {5238662993947095764 1} {4748715673264726913 1} {7041971185396299298 1} {6426236581173456050 1} {641166769453203497 1} {2331321274294606325 1} {7755448055899339244 1} {1669491231720144475 1} {8143073569563836760 1} {4955705715734532177 1} {4579320283438954107 1} {5076492877108058429 1} {875456751407501146 1} {2610274047608160936 1} {1175608964215319627 1} {1092779152374970460 1} {5385737071389113833 1} {4009451303716770996 1} {7209447491725820287 1}]
-(1)Server 1 send 2 args {1 1 51 1 [{7209447491725820287 1}] 1}
-(1)Sever 2 have a AE rpc {1 1 51 1 [{7209447491725820287 1}] 1}
-(1)Server 2 former logs are [{<nil> 0} {1686890597111537134 1} {5256350987530565902 1} {3647040171807567999 1} {1654976037062169039 1} {8284549586070100080 1} {4141880329960087045 1} {4733158575735168199 1} {7841836261720927299 1} {5362967352606225148 1} {5319145823980581301 1} {4553111735324884799 1} {3770510508326459256 1} {6574285499896900470 1} {3786219420222646990 1} {1424449103303574069 1} {3711086445993739490 1} {2446496765656198436 1} {4280012631069152238 1} {1839686186394844174 1} {918890687449784615 1} {5773204892054466266 1} {4470387094471635649 1} {7290236725661687137 1} {921509514035321031 1} {1032488287977344056 1} {9099718216835009785 1} {610248019722751006 1} {1096176299223076366 1} {2619345257310020096 1} {3317489243654081331 1} {8633838429011360311 1} {8309210421396159505 1} {5238662993947095764 1} {4748715673264726913 1} {7041971185396299298 1} {6426236581173456050 1} {641166769453203497 1} {2331321274294606325 1} {7755448055899339244 1} {1669491231720144475 1} {8143073569563836760 1} {4955705715734532177 1} {4579320283438954107 1} {5076492877108058429 1} {875456751407501146 1} {2610274047608160936 1} {1175608964215319627 1} {1092779152374970460 1} {5385737071389113833 1} {4009451303716770996 1} {7209447491725820287 1}]
-(1)Server 1 network is working.
-signal: interrupt
-FAIL	raft	1.083s
+(1)Server 2 attempt to commit 6/7 with cond 6,5
+(1)Server 2 commited change 6,{103 1}
+(1)Server 0 attempt to commit 6/7 with cond 6,5
+(1)Server 0 commited change 6,{103 1}
+  ... Passed
+(1)Server 1 have entries [{<nil> 0} {1 1} {104 1} {100 1} {101 1} {102 1} {103 1}]
+Server 0 Closed.
+Server 1 Closed.
+(1)Server 1 send 0 args {1 1 6 1 [{103 1}] 6}
+Server 2 Closed.
+PASS
+ok  	raft	0.884s

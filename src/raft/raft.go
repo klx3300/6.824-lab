@@ -449,6 +449,16 @@ func (rf *Raft) StateMachine() {
 						rf.debugPrint(func() { fmt.Printf("(%d)Server %d gets %d votes.\n", rf.currentTerm, rf.me, *gatheredVotes) })
 					} else {
 						rf.debugPrint(func() { fmt.Printf("(%d)Vote Gathering %d<-%d Failed: %v %v\n", rf.currentTerm, rf.me, i, ok, reply) })
+						if reply.Term > rf.currentTerm {
+							rf.currentTerm = reply.Term
+							go func() {
+								select {
+								case <-rf.toworkerChan:
+								default:
+								}
+								rf.toworkerChan <- 0
+							}()
+						}
 					}
 				}(i, &gatheredVotes)
 			}
@@ -632,7 +642,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 
 	// Your initialization code here.
 
-	rf.DEBUG_SWITCH = false // open debug output by default
+	rf.DEBUG_SWITCH = true  // open debug output by default
 	rf.RUNNING_STATE = true // ensure the stm loop keeps going
 	rf.TIMER_STATE = true   // ensure continuous timer
 
