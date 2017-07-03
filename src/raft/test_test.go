@@ -15,6 +15,10 @@ import "math/rand"
 import "sync/atomic"
 import "sync"
 
+func EndTestDelay() {
+	time.Sleep(1000 * time.Millisecond)
+}
+
 // The tester generously allows solutions to complete elections in one second
 // (much more than the paper's range of timeouts).
 const RaftElectionTimeout = 1000 * time.Millisecond

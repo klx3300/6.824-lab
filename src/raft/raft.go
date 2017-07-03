@@ -23,8 +23,8 @@ import "fmt"
 import "time"
 import "math/rand"
 
-// import "bytes"
-// import "encoding/gob"
+import "bytes"
+import "encoding/gob"
 
 //
 // as each Raft peer becomes aware that successive log entries are
@@ -41,7 +41,7 @@ type ApplyMsg struct {
 // simple key-value pair
 type Pair struct {
 	Command interface{}
-	term    int
+	Term    int
 }
 
 // appendEntries rpc parameter
@@ -61,15 +61,15 @@ type Raft struct {
 	currentTerm   int
 	currentLeader int
 	votedFor      int
-	logEntries    []Pair
+	LogEntries    []Pair
 
-	commitIndex   int
-	lastCommitted int
+	CommitIndex   int
+	LastCommitted int
 
 	// if this peer come into power,the following structure will be constructed
 	// otherwise,it will keeps nil value
-	nextIndex  *[]int
-	matchIndex *[]int
+	nextIndex  []int
+	matchIndex []int
 
 	// messaging channel
 	timeoutChan  chan int
@@ -136,7 +136,7 @@ func (rf *Raft) TimerSet(durationMs int) {
 
 // reset the timer
 func (rf *Raft) TimerReset() {
-	rand.Seed(time.Now().Unix())
+	rand.Seed(time.Now().Unix() + int64(rf.me))
 	rf.TimerSet(rand.Intn(500) + 200)
 }
 
@@ -161,6 +161,13 @@ func (rf *Raft) persist() {
 	// e.Encode(rf.yyy)
 	// data := w.Bytes()
 	// rf.persister.SaveRaftState(data)
+	w := new(bytes.Buffer)
+	e := gob.NewEncoder(w)
+	e.Encode(rf.LogEntries)
+	e.Encode(rf.LastCommitted)
+	e.Encode(rf.CommitIndex)
+	data := w.Bytes()
+	rf.persister.SaveRaftState(data)
 }
 
 //
@@ -173,6 +180,11 @@ func (rf *Raft) readPersist(data []byte) {
 	// d := gob.NewDecoder(r)
 	// d.Decode(&rf.xxx)
 	// d.Decode(&rf.yyy)
+	r := bytes.NewBuffer(data)
+	d := gob.NewDecoder(r)
+	d.Decode(&rf.LogEntries)
+	d.Decode(&rf.LastCommitted)
+	d.Decode(&rf.CommitIndex)
 }
 
 //
@@ -206,18 +218,20 @@ type AppendEntriesArgs struct {
 }
 
 type AppendEntriesReply struct {
-	CurrTerm int
-	Success  bool
+	CurrTerm    int
+	Success     bool
+	LastApplied int
 }
 
 // appendEntries RPC handler
 func (rf *Raft) AppendEntries(args AppendEntriesArgs, reply *AppendEntriesReply) {
-	rf.TimerReset()
+	rf.debugPrint(func() { fmt.Printf("(%d)Sever %d have a AE rpc %v\n", rf.currentTerm, rf.me, args) })
 	reply.CurrTerm = rf.currentTerm
 	if args.Term < rf.currentTerm {
 		reply.Success = false
 		return
 	}
+	rf.TimerReset()
 	// ok in this case (lab 2A) I wont care what args contains,
 	// I will just take it as heartbeat package
 	// TODO : implement 2B 2C
@@ -234,9 +248,34 @@ func (rf *Raft) AppendEntries(args AppendEntriesArgs, reply *AppendEntriesReply)
 		go func() {
 			rf.toworkerChan <- args.LeaderId
 		}()
+		// update logEntries
+		rf.debugPrint(func() { fmt.Printf("(%d)Server %d former logs are %v\n", rf.currentTerm, rf.me, rf.LogEntries) })
+		if len(rf.LogEntries) <= args.PrevLogIndex || rf.LogEntries[args.PrevLogIndex].Term != args.PrevLogTerm {
+			rf.debugPrint(func() {
+				if len(rf.LogEntries) <= args.PrevLogIndex {
+					fmt.Printf("(%d)Server %d cmp length failed with %d/%d\n", rf.currentTerm, rf.me, args.PrevLogIndex, len(rf.LogEntries))
+				} else {
+					fmt.Printf("(%d)Server %d cmp term failed with %d<>%d\n", rf.currentTerm, rf.me, rf.LogEntries[args.PrevLogIndex].Term, args.PrevLogTerm)
+				}
+			})
+			reply.LastApplied = rf.LastCommitted
+			reply.Success = false
+		} else {
+			reply.Success = true
+			// shrink to fit
+			if len(args.Entries) > 1 {
+				rf.LogEntries = rf.LogEntries[0 : args.PrevLogIndex+1]
+				rf.debugPrint(func() { fmt.Printf("(%d)Server %d received args %v\n", rf.currentTerm, rf.me, args) })
+				for i := 1; i < len(args.Entries); i++ {
+					rf.LogEntries = append(rf.LogEntries, args.Entries[i])
+				}
+				rf.debugPrint(func() { fmt.Printf("(%d)Server %d updated result is %v\n", rf.currentTerm, rf.me, rf.LogEntries) })
+			}
+			if args.LeaderCommitIndex > rf.CommitIndex {
+				rf.CommitIndex = args.LeaderCommitIndex
+			}
+		}
 	}
-	reply.Success = true
-
 }
 
 //
@@ -251,7 +290,13 @@ func (rf *Raft) RequestVote(args RequestVoteArgs, reply *RequestVoteReply) {
 	if args.Term < rf.currentTerm {
 		reply.Term = rf.currentTerm
 		reply.VoteGranted = false
-	} else if rf.lastCommitted == 0 || (args.LastLogTerm >= rf.logEntries[rf.lastCommitted].term && args.LastLogIndex >= rf.lastCommitted) {
+		return
+	}
+	if args.Term > rf.currentTerm {
+		rf.currentTerm = args.Term
+		rf.votedFor = -1
+	}
+	if args.LastLogTerm >= rf.LogEntries[rf.LastCommitted].Term && args.LastLogIndex >= rf.LastCommitted {
 		// you are the big brother ... or I have already voted for somebody!
 		if rf.votedFor == -1 || rf.votedFor == args.CandidateId {
 			// you are the big brother
@@ -260,12 +305,23 @@ func (rf *Raft) RequestVote(args RequestVoteArgs, reply *RequestVoteReply) {
 			reply.VoteGranted = true
 		} else {
 			// no way
+			rf.debugPrint(func() {
+				fmt.Printf("(%d)Server %d refused to vote because it has voted for %d.\n", rf.currentTerm, rf.me, rf.votedFor)
+			})
 			reply.VoteGranted = false
 		}
 	} else {
 		// I am the big brother
+		rf.debugPrint(func() {
+			fmt.Printf("(%d)Server %d refuse to vote because cmp fail with (%d,%d)&(%d,%d)\n", rf.currentTerm, rf.me, args.LastLogTerm, rf.LogEntries[rf.LastCommitted].Term, args.LastLogIndex, rf.LastCommitted)
+		})
 		reply.VoteGranted = false
 	}
+}
+
+func (rf *Raft) ApplyEntries(entry Pair) {
+	// TODO : this is not used in case lab2 doesn't have a real statemaching running
+	// TODO : Implement this in following labs
 }
 
 //
@@ -286,14 +342,32 @@ func (rf *Raft) RequestVote(args RequestVoteArgs, reply *RequestVoteReply) {
 // the struct itself.
 //
 func (rf *Raft) sendRequestVote(server int, args RequestVoteArgs, reply *RequestVoteReply) bool {
-	ok := rf.peers[server].Call("Raft.RequestVote", args, reply)
-	return ok
+	isSuccChan := make(chan bool)
+	go func() {
+		ok := rf.peers[server].Call("Raft.RequestVote", args, reply)
+		isSuccChan <- ok
+	}()
+	select {
+	case rev := <-isSuccChan:
+		return rev
+	case <-time.After(500 * time.Millisecond):
+		return false
+	}
 }
 
 // send an AppendEntries RPC to a server
 func (rf *Raft) sendAppendEntries(server int, args AppendEntriesArgs, reply *AppendEntriesReply) bool {
-	ok := rf.peers[server].Call("Raft.AppendEntries", args, reply)
-	return ok
+	isSuccChan := make(chan bool)
+	go func() {
+		ok := rf.peers[server].Call("Raft.AppendEntries", args, reply)
+		isSuccChan <- ok
+	}()
+	select {
+	case rev := <-isSuccChan:
+		return rev
+	case <-time.After(500 * time.Millisecond):
+		return false
+	}
 }
 
 //
@@ -310,10 +384,14 @@ func (rf *Raft) sendAppendEntries(server int, args AppendEntriesArgs, reply *App
 // the leader.
 //
 func (rf *Raft) Start(command interface{}) (int, int, bool) {
-	index := -1
-	term := -1
-
-	return index, term, rf.nextIndex != nil
+	if rf.nextIndex == nil {
+		return len(rf.LogEntries) - 1, rf.currentTerm, false
+	}
+	// That's the leader.
+	// Attempt to add this entry to stm
+	rf.debugPrint(func() { fmt.Printf("(%d)Server %d received client request %v\n", rf.currentTerm, rf.me, command) })
+	rf.LogEntries = append(rf.LogEntries, Pair{command, rf.currentTerm})
+	return len(rf.LogEntries) - 1, rf.currentTerm, true
 }
 
 //
@@ -360,10 +438,8 @@ func (rf *Raft) StateMachine() {
 				go func(i int, gatheredVotes *int) {
 					invokeTerm := rf.currentTerm
 					reply := new(RequestVoteReply)
-					args := RequestVoteArgs{rf.currentTerm, rf.me, rf.lastCommitted, 0}
-					if rf.lastCommitted != 0 {
-						args.LastLogTerm = rf.logEntries[rf.lastCommitted].term
-					}
+					args := RequestVoteArgs{rf.currentTerm, rf.me, rf.CommitIndex, 0}
+					args.LastLogTerm = rf.LogEntries[len(rf.LogEntries)-1].Term
 					rf.debugPrint(func() { fmt.Printf("(%d)Server %d asks %d for a vote %v\n", rf.currentTerm, rf.me, i, args) })
 					ok := rf.sendRequestVote(i, args, reply)
 					if ok && reply.VoteGranted && reply.Term == invokeTerm {
@@ -408,8 +484,16 @@ func (rf *Raft) StateMachine() {
 		for i := 0; i < len(successive); i++ {
 			successive[i] = true
 		}
-		rf.nextIndex = &[]int{}
-		rf.matchIndex = &[]int{}
+		rf.nextIndex = make([]int, len(rf.peers))
+		// init rf.nextIndex
+		for i := 0; i < len(rf.peers); i++ {
+			rf.nextIndex[i] = rf.CommitIndex
+		}
+		rf.matchIndex = make([]int, len(rf.peers))
+		// init rf.matchIndex
+		for i := 0; i < len(rf.peers); i++ {
+			rf.matchIndex[i] = 0
+		}
 		for i := 0; i < len(rf.peers); i++ {
 			// launch goroutines to send rpc calls
 			if i != rf.me {
@@ -419,14 +503,37 @@ func (rf *Raft) StateMachine() {
 						// but shall implement on later parts
 						// TODO : lab2B lab2C
 						reply := new(AppendEntriesReply)
-						args := AppendEntriesArgs{rf.currentTerm, rf.me, 0, rf.currentTerm, make([]Pair, 0), 0}
-						// send hbs
+						args := AppendEntriesArgs{rf.currentTerm, rf.me, 0, 0, make([]Pair, 0), rf.CommitIndex}
+						// create values & slices
+						if rf.nextIndex != nil {
+							args.PrevLogIndex = rf.nextIndex[i]
+							args.PrevLogTerm = rf.LogEntries[rf.nextIndex[i]].Term
+							args.Entries = rf.LogEntries[rf.nextIndex[i]:len(rf.LogEntries)]
+						}
+						// send AppendEntries RPC
+						rf.debugPrint(func() { fmt.Printf("(%d)Server %d have entries %v\n", rf.currentTerm, rf.me, rf.LogEntries) })
+						rf.debugPrint(func() { fmt.Printf("(%d)Server %d send %d args %v\n", rf.currentTerm, rf.me, i, args) })
 						ok := rf.sendAppendEntries(i, args, reply)
 						successive[i] = ok
 						if !ok {
 							rf.debugPrint(func() { fmt.Printf("(%d)Server %d network failed.\n", rf.currentTerm, rf.me) })
+						} else {
+							// so the AE RPC is success and have its return value.
+							// lets check it.
+							rf.debugPrint(func() { fmt.Printf("(%d)Server %d network is working.\n", rf.currentTerm, rf.me) })
+							if reply.Success {
+								if rf.nextIndex != nil {
+									rf.nextIndex[i] = len(rf.LogEntries) - 1
+									rf.matchIndex[i] = len(rf.LogEntries) - 1
+								}
+							} else {
+								if rf.nextIndex != nil {
+									rf.nextIndex[i] = reply.LastApplied
+								}
+							}
 						}
 						// well this part will not care about what that stuff returns.
+						time.Sleep(50 * time.Millisecond)
 					}
 				}(i)
 			}
@@ -456,6 +563,54 @@ func (rf *Raft) StateMachine() {
 	}
 }
 
+// this process keeps applying new entries
+func (rf *Raft) Applier(applyCh chan ApplyMsg) {
+	for rf.RUNNING_STATE {
+		time.Sleep(50 * time.Millisecond)
+		if rf.CommitIndex > rf.LastCommitted && rf.LastCommitted+1 < len(rf.LogEntries) {
+			rf.debugPrint(func() {
+				fmt.Printf("(%d)Server %d attempt to commit %d/%d with cond %d,%d\n", rf.currentTerm, rf.me, rf.LastCommitted+1, len(rf.LogEntries), rf.CommitIndex, rf.LastCommitted)
+			})
+			rf.ApplyEntries(rf.LogEntries[rf.LastCommitted+1])
+			rf.LastCommitted++
+			applyCh <- ApplyMsg{rf.LastCommitted, rf.LogEntries[rf.LastCommitted].Command, false, nil}
+			rf.persist()
+			rf.debugPrint(func() {
+				fmt.Printf("(%d)Server %d commited change %d,%v\n", rf.currentTerm, rf.me, rf.LastCommitted, rf.LogEntries[rf.LastCommitted])
+			})
+
+		} else if rf.nextIndex != nil && rf.LastCommitted+1 < len(rf.LogEntries) {
+			// check agreement with cluster
+			rf.debugPrint(func() { fmt.Printf("(%d)Server %d have matchIndex record %v\n", rf.currentTerm, rf.me, rf.matchIndex) })
+			sum := 1
+			for i := 0; i < len(rf.peers); i++ {
+				if i != rf.me {
+					if rf.matchIndex != nil && rf.matchIndex[i] >= rf.LastCommitted+1 {
+						sum++
+					}
+				}
+			}
+			rf.debugPrint(func() {
+				fmt.Printf("(%d)Server %d attempt to commit %d/%d with %d agreement\n", rf.currentTerm, rf.me, rf.LastCommitted+1, len(rf.LogEntries), sum)
+			})
+			if sum > len(rf.peers)/2 {
+				// most cluster agree with leader
+				// start commit
+				rf.ApplyEntries(rf.LogEntries[rf.LastCommitted+1])
+				rf.LastCommitted++
+				if rf.CommitIndex < rf.LastCommitted {
+					rf.CommitIndex = rf.LastCommitted
+				}
+				applyCh <- ApplyMsg{rf.LastCommitted, rf.LogEntries[rf.LastCommitted].Command, false, nil}
+				rf.persist()
+				rf.debugPrint(func() {
+					fmt.Printf("(%d)Server %d commited change %d,%v\n", rf.currentTerm, rf.me, rf.LastCommitted, rf.LogEntries[rf.LastCommitted])
+				})
+			}
+		}
+	}
+}
+
 //
 // the service or tester wants to create a Raft server. the ports
 // of all the Raft servers (including this one) are in peers[]. this
@@ -469,7 +624,7 @@ func (rf *Raft) StateMachine() {
 //
 func Make(peers []*labrpc.ClientEnd, me int,
 	persister *Persister, applyCh chan ApplyMsg) *Raft {
-	rand.Seed(time.Now().Unix())
+	rand.Seed(time.Now().Unix() + int64(me))
 	rf := &Raft{}
 	rf.peers = peers
 	rf.persister = persister
@@ -492,11 +647,16 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.currentLeader = -1
 
 	// initialize from state persisted before a crash
+	rf.LogEntries = make([]Pair, 0)
+	rf.LogEntries = append(rf.LogEntries, Pair{nil, 0})
+	rf.CommitIndex = 0
+	rf.LastCommitted = 0
 	rf.readPersist(persister.ReadRaftState())
 
 	// finally, run the state machine and the timer
 	go rf.Timer(rand.Intn(500) + 200)
 	go rf.StateMachine()
+	go rf.Applier(applyCh)
 
 	return rf
 }

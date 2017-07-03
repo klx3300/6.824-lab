@@ -1,0 +1,33 @@
+dist: trusty
+language: go
+go_import_path: github.com/klx3300/6.824-labs
+sudo: false
+
+go:
+  - 1.7.x
+
+env:
+  - TEST_NAME="lab2 InitialElection"
+  - TEST_NAME="lab2 ReElection"
+  - TEST_NAME="lab2 BasicAgree"
+  - TEST_NAME="lab2 FailAgree"
+  - TEST_NAME="lab2 FailNoAgree"
+  - TEST_NAME="lab2 ConcurrentStarts"
+  - TEST_NAME="lab2 Rejoin"
+  - TEST_NAME="lab2 Backup"
+  - TEST_NAME="lab2 Count"
+  - TEST_NAME="lab2 Persist1"
+  - TEST_NAME="lab2 Persist2"
+  - TEST_NAME="lab2 Persist3"
+  - TEST_NAME="lab2 Figure8"
+  - TEST_NAME="lab2 UnreliableAgree"
+  - TEST_NAME="lab2 Figure8Unreliable"
+  - TEST_NAME="lab2 ReliableChurn"
+  - TEST_NAME="lab2 UnreliableChurn"
+
+script:
+ - ./test.sh $TEST_NAME 100
+
+branches:
+  only:
+  - master
